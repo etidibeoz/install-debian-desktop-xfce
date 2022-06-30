@@ -138,8 +138,8 @@ AllowSuspendThenHibernate=no
 AllowHybridSleep=no
 EOF
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt update
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y locales
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt update
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y locales
 
 cat >>/mnt/etc/locale.gen <<"EOF"
 en_US.UTF-8 UTF-8
@@ -164,9 +164,9 @@ LC_IDENTIFICATION=en_US.UTF-8
 LC_ALL=
 EOF
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off locale-gen
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off locale-gen
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y keyboard-configuration
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y keyboard-configuration
 
 cat >>/mnt/etc/default/keyboard <<"EOF"
 # KEYBOARD CONFIGURATION FILE
@@ -181,8 +181,8 @@ XKBOPTIONS="grp:alt_shift_toggle"
 BACKSPACE="guess"
 EOF
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y console-setup
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y systemd-timesyncd
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y console-setup
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y systemd-timesyncd
 
 mkdir /mnt/etc/systemd/timesyncd.conf.d
 cat >>/mnt/etc/systemd/timesyncd.conf.d/99custom.conf <<"EOF"
@@ -191,90 +191,90 @@ NTP=0.europe.pool.ntp.org 1.europe.pool.ntp.org 2.europe.pool.ntp.org 3.europe.p
 FallbackNTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
 EOF
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y python3 python-is-python3
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y perl
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y openssl
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y ca-certificates
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y bash-completion sudo rsync rclone curl wget sqlite3 bzip2 gzip zip unzip zstd xz-utils file screen nocache eatmydata wimtools dosfstools squashfs-tools ntfs-3g hdparm gdisk parted eject debootstrap cryptsetup-bin
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y git gnupg scdaemon
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y nvme-cli
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y man-db
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y ssh
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y ufw
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y nfs-common
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y smartmontools
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y python3 python-is-python3
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y perl
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y openssl
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y ca-certificates
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y bash-completion sudo rsync rclone curl wget sqlite3 bzip2 gzip zip unzip zstd xz-utils file screen nocache eatmydata wimtools dosfstools squashfs-tools ntfs-3g hdparm gdisk parted eject debootstrap cryptsetup-bin
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y git gnupg scdaemon
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y nvme-cli
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y man-db
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y ssh
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y ufw
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y nfs-common
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y smartmontools
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y qemu-user-static
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y binfmt-support
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y qemu-user-static
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y binfmt-support
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y dbus dbus-user-session
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y systemd-container
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y dbus dbus-user-session
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y systemd-container
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y python3-venv python3-pip python3-wheel python3-setuptools
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y python3-venv python3-pip python3-wheel python3-setuptools
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y yubikey-manager
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y streamlink youtube-dl
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y yubikey-manager
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y streamlink youtube-dl
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y tree jhead optipng powertop lm-sensors
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y tree jhead optipng powertop lm-sensors
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y build-essential gcc g++ gdb make cmake
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y crossbuild-essential-arm64
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y clang-format
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y bison flex bc libelf-dev libssl-dev libncurses-dev
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y build-essential gcc g++ gdb make cmake
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y crossbuild-essential-arm64
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y clang-format
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y bison flex bc libelf-dev libssl-dev libncurses-dev
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y xdg-utils xdg-user-dirs
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y upower policykit-1
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y network-manager wpasupplicant
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y bluez bluez-obexd
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y pulseaudio pulseaudio-module-bluetooth
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y xdg-utils xdg-user-dirs
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y upower policykit-1
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y network-manager wpasupplicant
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y bluez bluez-obexd
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y pulseaudio pulseaudio-module-bluetooth
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y xserver-xorg-{core,input-libinput,video-{amdgpu,nouveau,intel,fbdev,vesa}} xfonts-{base,scalable,75dpi,100dpi} xinit xauth xkb-data x11-xkb-utils x11-xserver-utils
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y lightdm lightdm-gtk-greeter light-locker
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y xfwm4 xfdesktop4 xfce4-panel xfce4-{whiskermenu,pulseaudio}-plugin xfce4-{notifyd,session,settings,terminal,screenshooter,taskmanager,power-manager,power-manager-plugins}
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y tumbler tumbler-plugins-extra thunar mousepad ristretto pavucontrol
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y gnome-calculator gparted gufw obs-studio vlc deluge sqlitebrowser pinentry-qt
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y firefox-esr thunderbird
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y gvfs gvfs-backends udisks2
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y policykit-1-gnome
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y network-manager-gnome blueman
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y greybird-gtk-theme elementary-xfce-icon-theme
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y xserver-xorg-{core,input-libinput,video-{amdgpu,nouveau,intel,fbdev,vesa}} xfonts-{base,scalable,75dpi,100dpi} xinit xauth xkb-data x11-xkb-utils x11-xserver-utils
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y lightdm lightdm-gtk-greeter light-locker
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y xfwm4 xfdesktop4 xfce4-panel xfce4-{whiskermenu,pulseaudio}-plugin xfce4-{notifyd,session,settings,terminal,screenshooter,taskmanager,power-manager,power-manager-plugins}
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y tumbler tumbler-plugins-extra thunar mousepad ristretto pavucontrol
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y gnome-calculator gparted gufw obs-studio vlc deluge sqlitebrowser pinentry-qt
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y firefox-esr thunderbird
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y gvfs gvfs-backends udisks2
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y policykit-1-gnome
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y network-manager-gnome blueman
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y greybird-gtk-theme elementary-xfce-icon-theme
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install --mark-auto -y gstreamer1.0-plugins-base gstreamer1.0-plugins-good
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install --mark-auto -y qt5-gtk-platformtheme qt5-image-formats-plugins
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install --mark-auto -y mesa-{vulkan,vdpau,va}-drivers
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install --mark-auto -y gstreamer1.0-plugins-base gstreamer1.0-plugins-good
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install --mark-auto -y qt5-gtk-platformtheme qt5-image-formats-plugins
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install --mark-auto -y mesa-{vulkan,vdpau,va}-drivers
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y ffmpeg
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y ffmpeg
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y openjdk-17-jre
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y openjdk-17-jdk
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y openjdk-17-jre
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y openjdk-17-jdk
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y linux-source linux-image-amd64 linux-headers-amd64
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y amd64-microcode wireless-regdb firmware-{misc-nonfree,amd-graphics,iwlwifi,realtek,atheros,brcm80211}
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y grub-efi-amd64
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y desktop-base
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y linux-source linux-image-amd64 linux-headers-amd64
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y amd64-microcode wireless-regdb firmware-{misc-nonfree,amd-graphics,iwlwifi,realtek,atheros,brcm80211}
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y grub-efi-amd64
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y desktop-base
 
 cat >>/mnt/etc/fstab <<EOF
 PARTUUID=$(blkid -o value -s PARTUUID /dev/nvme0n1p2) / ext4 defaults,strictatime,lazytime 0 1
 PARTUUID=$(blkid -o value -s PARTUUID /dev/nvme0n1p1) /efi vfat defaults,noatime,ro 0 2
 EOF
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl enable systemd-timesyncd
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl enable systemd-resolved
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl mask smartmontools.service
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl mask apt-daily-upgrade.service
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl mask apt-daily-upgrade.timer
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl mask apt-daily.service
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl mask apt-daily.timer
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl mask fstrim.service
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl mask fstrim.timer
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off systemctl enable systemd-timesyncd
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off systemctl enable systemd-resolved
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off systemctl mask smartmontools.service
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off systemctl mask apt-daily-upgrade.service
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off systemctl mask apt-daily-upgrade.timer
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off systemctl mask apt-daily.service
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off systemctl mask apt-daily.timer
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off systemctl mask fstrim.service
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off systemctl mask fstrim.timer
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off useradd --create-home --shell /bin/bash --groups sudo,cdrom,audio,video,netdev,plugdev daniil
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off useradd --create-home --shell /bin/bash --groups sudo,cdrom,audio,video,netdev,plugdev securedaniil
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off useradd --create-home --shell /bin/bash --groups sudo securestorage
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off usermod --append --groups securestorage securedaniil
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off passwd daniil
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off useradd --create-home --shell /bin/bash --groups sudo,cdrom,audio,video,netdev,plugdev daniil
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off useradd --create-home --shell /bin/bash --groups sudo,cdrom,audio,video,netdev,plugdev securedaniil
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off useradd --create-home --shell /bin/bash --groups sudo securestorage
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off usermod --append --groups securestorage securedaniil
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off passwd daniil
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 
 mount -t proc proc /mnt/proc
 mount -t sysfs sysfs /mnt/sys
