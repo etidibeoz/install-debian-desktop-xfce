@@ -1,0 +1,294 @@
+#!/bin/bash
+
+
+set -ev
+
+
+nvme format /dev/nvme0 -n 1 -s 1
+sleep 300
+partprobe /dev/nvme0n1
+sleep 300
+nvme format /dev/nvme0 -n 1 -s 1
+sleep 300
+partprobe /dev/nvme0n1
+sleep 300
+
+
+sgdisk -o -n1:0:+64M -n2:0:0 -t1:EF00 /dev/nvme0n1
+
+
+export MKE2FS_CONFIG=$(mktemp)
+
+cat >>"$MKE2FS_CONFIG" <<"EOF"
+[defaults]
+	base_features = sparse_super2,large_file,ext_attr
+	default_mntopts = acl,user_xattr
+	enable_periodic_fsck = 0
+	blocksize = 4096
+	inode_size = 256
+	inode_ratio = 16384
+
+[fs_types]
+	ext4 = {
+		features = 64bit,encrypt,extent,filetype,has_journal,huge_file,flex_bg,metadata_csum,extra_isize,dir_index
+	}
+EOF
+
+mkdosfs -F32 -R2 -h0 -v /dev/nvme0n1p1; mke2fs -D -E lazy_itable_init=0,lazy_journal_init=0,num_backup_sb=2,packed_meta_blocks=1 -t ext4 -m 0 -v /dev/nvme0n1p2
+
+mount -o strictatime,lazytime /dev/nvme0n1p2 /mnt; mkdir /mnt/efi; mount -o noatime /dev/nvme0n1p1 /mnt/efi
+
+debootstrap bookworm /mnt https://dpvctowv9b08b.cloudfront.net/debian
+rm -r /mnt/var/log/bootstrap.log /mnt/var/cache/apt/archives
+
+echo "midgard" > /mnt/etc/hostname
+echo "127.0.0.1 localhost midgard" > /mnt/etc/hosts
+echo "deb https://dpvctowv9b08b.cloudfront.net/debian bookworm main contrib non-free" > /mnt/etc/apt/sources.list
+
+cat >>/mnt/etc/apt/apt.conf.d/99custom <<"EOF"
+APT::Install-Recommends "0";
+APT::Install-Suggests "0";
+EOF
+
+cat >>/mnt/etc/apt/preferences.d/99custom <<"EOF"
+Package: *
+Pin: release c=non-free
+Pin-Priority: -10
+
+Package: *
+Pin: release c=contrib
+Pin-Priority: -10
+
+Package: amd64-microcode
+Pin: release c=non-free
+Pin-Priority: 990
+
+Package: firmware-misc-nonfree
+Pin: release c=non-free
+Pin-Priority: 990
+
+Package: firmware-amd-graphics
+Pin: release c=non-free
+Pin-Priority: 990
+
+Package: firmware-iwlwifi
+Pin: release c=non-free
+Pin-Priority: 990
+
+Package: firmware-realtek
+Pin: release c=non-free
+Pin-Priority: 990
+
+Package: firmware-atheros
+Pin: release c=non-free
+Pin-Priority: 990
+
+Package: firmware-brcm80211
+Pin: release c=non-free
+Pin-Priority: 990
+
+Package: src:zfs-linux
+Pin: release c=contrib
+Pin-Priority: 990
+
+Package: firefox-esr
+Pin: version 91*
+Pin-Priority: 1005
+
+Package: thunderbird
+Pin: version 91*
+Pin-Priority: 1005
+EOF
+
+mkdir /mnt/etc/systemd/resolved.conf.d
+cat >>/mnt/etc/systemd/resolved.conf.d/99custom.conf <<"EOF"
+[Resolve]
+DNS=8.8.8.8#dns.google 8.8.4.4#dns.google 2001:4860:4860::8888#dns.google 2001:4860:4860::8844#dns.google
+FallbackDNS=1.1.1.1#cloudflare-dns.com 1.0.0.1#cloudflare-dns.com 2606:4700:4700::1111#cloudflare-dns.com 2606:4700:4700::1001#cloudflare-dns.com
+Domains=~.
+DNSSEC=yes
+DNSOverTLS=yes
+MulticastDNS=yes
+LLMNR=yes
+Cache=yes
+CacheFromLocalhost=no
+DNSStubListener=yes
+ReadEtcHosts=yes
+EOF
+
+mkdir /mnt/etc/systemd/logind.conf.d
+cat >>/mnt/etc/systemd/logind.conf.d/99custom.conf <<"EOF"
+[Login]
+HandlePowerKey=poweroff
+HandleSuspendKey=ignore
+HandleHibernateKey=ignore
+HandleRebootKey=ignore
+HandleRebootKeyLongPress=ignore
+HandleLidSwitch=ignore
+HandleLidSwitchDocked=ignore
+HandleLidSwitchExternalPower=ignore
+EOF
+
+mkdir /mnt/etc/systemd/sleep.conf.d
+cat >>/mnt/etc/systemd/sleep.conf.d/99custom.conf <<"EOF"
+[Sleep]
+AllowSuspend=no
+AllowHibernation=no
+AllowSuspendThenHibernate=no
+AllowHybridSleep=no
+EOF
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt update
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y locales
+
+cat >>/mnt/etc/locale.gen <<"EOF"
+en_US.UTF-8 UTF-8
+en_GB.UTF-8 UTF-8
+EOF
+
+cat >>/mnt/etc/default/locale <<"EOF"
+LANG=en_US.UTF-8
+LANGUAGE=
+LC_CTYPE=en_US.UTF-8
+LC_NUMERIC=en_US.UTF-8
+LC_TIME=en_GB.UTF-8
+LC_COLLATE=en_US.UTF-8
+LC_MONETARY=en_US.UTF-8
+LC_MESSAGES=en_US.UTF-8
+LC_PAPER=en_GB.UTF-8
+LC_NAME=en_US.UTF-8
+LC_ADDRESS=en_US.UTF-8
+LC_TELEPHONE=en_US.UTF-8
+LC_MEASUREMENT=en_GB.UTF-8
+LC_IDENTIFICATION=en_US.UTF-8
+LC_ALL=
+EOF
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off locale-gen
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y keyboard-configuration
+
+cat >>/mnt/etc/default/keyboard <<"EOF"
+# KEYBOARD CONFIGURATION FILE
+
+# Consult the keyboard(5) manual page.
+
+XKBMODEL="pc105"
+XKBLAYOUT="us,ru"
+XKBVARIANT=""
+XKBOPTIONS="grp:alt_shift_toggle"
+
+BACKSPACE="guess"
+EOF
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y console-setup
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y systemd-timesyncd
+
+mkdir /mnt/etc/systemd/timesyncd.conf.d
+cat >>/mnt/etc/systemd/timesyncd.conf.d/99custom.conf <<"EOF"
+[Time]
+NTP=0.europe.pool.ntp.org 1.europe.pool.ntp.org 2.europe.pool.ntp.org 3.europe.pool.ntp.org
+FallbackNTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
+EOF
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y python3 python-is-python3
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y perl
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y openssl
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y ca-certificates
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y bash-completion sudo rsync rclone curl wget sqlite3 bzip2 gzip zip unzip zstd xz-utils file screen nocache eatmydata wimtools dosfstools squashfs-tools ntfs-3g hdparm gdisk parted eject debootstrap cryptsetup-bin
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y git gnupg scdaemon
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y nvme-cli
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y man-db
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y ssh
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y ufw
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y nfs-common
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y smartmontools
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y qemu-user-static
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y binfmt-support
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y dbus dbus-user-session
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y systemd-container
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y python3-venv python3-pip python3-wheel python3-setuptools
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y yubikey-manager
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y streamlink youtube-dl
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y tree jhead optipng powertop lm-sensors
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y build-essential gcc g++ gdb make cmake
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y crossbuild-essential-arm64
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y clang-format
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y bison flex bc libelf-dev libssl-dev libncurses-dev
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y xdg-utils xdg-user-dirs
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y upower policykit-1
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y network-manager wpasupplicant
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y bluez bluez-obexd
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y pulseaudio pulseaudio-module-bluetooth
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y xserver-xorg-{core,input-libinput,video-{amdgpu,nouveau,intel,fbdev,vesa}} xfonts-{base,scalable,75dpi,100dpi} xinit xauth xkb-data x11-xkb-utils x11-xserver-utils
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y lightdm lightdm-gtk-greeter light-locker
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y xfwm4 xfdesktop4 xfce4-panel xfce4-{whiskermenu,pulseaudio}-plugin xfce4-{notifyd,session,settings,terminal,screenshooter,taskmanager,power-manager,power-manager-plugins}
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y tumbler tumbler-plugins-extra thunar mousepad ristretto pavucontrol
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y gnome-calculator gparted gufw obs-studio vlc deluge sqlitebrowser pinentry-qt
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y firefox-esr thunderbird
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y gvfs gvfs-backends udisks2
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y policykit-1-gnome
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y network-manager-gnome blueman
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y greybird-gtk-theme elementary-xfce-icon-theme
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install --mark-auto -y gstreamer1.0-plugins-base gstreamer1.0-plugins-good
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install --mark-auto -y qt5-gtk-platformtheme qt5-image-formats-plugins
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install --mark-auto -y mesa-{vulkan,vdpau,va}-drivers
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y ffmpeg
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y openjdk-17-jre
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y openjdk-17-jdk
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y linux-source linux-image-amd64 linux-headers-amd64
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y amd64-microcode wireless-regdb firmware-{misc-nonfree,amd-graphics,iwlwifi,realtek,atheros,brcm80211}
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y grub-efi-amd64
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off apt install -y desktop-base
+
+cat >>/mnt/etc/fstab <<EOF
+PARTUUID=$(blkid -o value -s PARTUUID /dev/nvme0n1p2) / ext4 defaults,strictatime,lazytime 0 1
+PARTUUID=$(blkid -o value -s PARTUUID /dev/nvme0n1p1) /efi vfat defaults,noatime,ro 0 2
+EOF
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl enable systemd-timesyncd
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl enable systemd-resolved
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl mask smartmontools.service
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl mask apt-daily-upgrade.service
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl mask apt-daily-upgrade.timer
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl mask apt-daily.service
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl mask apt-daily.timer
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl mask fstrim.service
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off systemctl mask fstrim.timer
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off useradd --create-home --shell /bin/bash --groups sudo,cdrom,audio,video,netdev,plugdev daniil
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off useradd --create-home --shell /bin/bash --groups sudo,cdrom,audio,video,netdev,plugdev securedaniil
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off useradd --create-home --shell /bin/bash --groups sudo securestorage
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off usermod --append --groups securestorage securedaniil
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off passwd daniil
+
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --timezone off --resolv-conf off ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+
+mount -t proc proc /mnt/proc
+mount -t sysfs sysfs /mnt/sys
+
+mount --bind /dev /mnt/dev
+mount --bind /dev/pts /mnt/dev/pts
+
+mount --make-slave /mnt/dev
+mount --make-slave /mnt/dev/pts
+
+chroot /mnt update-initramfs -u -k all; chroot /mnt update-grub
+
+chroot /mnt grub-install --target=x86_64-efi --efi-directory=/efi --recheck --no-floppy --bootloader-id="Debian Bookworm"
+
+umount -v /mnt/dev/pts /mnt/dev /mnt/sys /mnt/proc /mnt/efi /mnt
+
+exit
