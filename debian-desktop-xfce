@@ -215,7 +215,7 @@ systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midga
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y yubikey-manager
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y streamlink youtube-dl
 
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y tree jhead optipng powertop lm-sensors
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y p7zip-full p7zip-rar ncat tree jq jhead optipng powertop lm-sensors
 
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y build-essential gcc g++ gdb make cmake
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y crossbuild-essential-arm64
@@ -232,15 +232,16 @@ systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midga
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y lightdm lightdm-gtk-greeter light-locker
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y xfwm4 xfdesktop4 xfce4-panel xfce4-{whiskermenu,pulseaudio}-plugin xfce4-{notifyd,session,settings,terminal,screenshooter,taskmanager,power-manager,power-manager-plugins}
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y tumbler tumbler-plugins-extra thunar mousepad ristretto pavucontrol
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y gnome-calculator gparted gufw obs-studio vlc deluge sqlitebrowser pinentry-qt
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y gnome-calculator gparted gufw obs-studio vlc deluge gimp imagemagick wxhexeditor sqlitebrowser pinentry-qt
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y firefox-esr thunderbird
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y telegram-desktop
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y gvfs gvfs-backends udisks2
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y policykit-1-gnome
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y network-manager-gnome blueman
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y greybird-gtk-theme elementary-xfce-icon-theme
 
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install --mark-auto -y gstreamer1.0-plugins-base gstreamer1.0-plugins-good
-systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install --mark-auto -y qt5-gtk-platformtheme qt5-image-formats-plugins
+systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install --mark-auto -y qt5-gtk-platformtheme qt5-image-formats-plugins fonts-open-sans
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install --mark-auto -y mesa-{vulkan,vdpau,va}-drivers
 
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y ffmpeg
