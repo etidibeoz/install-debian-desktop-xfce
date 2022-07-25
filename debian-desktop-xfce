@@ -19,7 +19,7 @@ sgdisk -o -n1:0:+64M -n2:0:0 -t1:EF00 /dev/nvme0n1
 
 export MKE2FS_CONFIG=$(mktemp)
 
-cat >>"$MKE2FS_CONFIG" <<"EOF"
+cat >"$MKE2FS_CONFIG" <<"EOF"
 [defaults]
 	base_features = sparse_super2,large_file,ext_attr
 	default_mntopts = acl,user_xattr
@@ -45,12 +45,12 @@ echo "midgard" > /mnt/etc/hostname
 echo "127.0.0.1 localhost midgard" > /mnt/etc/hosts
 echo "deb https://dpvctowv9b08b.cloudfront.net/debian bookworm main contrib non-free" > /mnt/etc/apt/sources.list
 
-cat >>/mnt/etc/apt/apt.conf.d/99custom <<"EOF"
+cat >/mnt/etc/apt/apt.conf.d/99custom <<"EOF"
 APT::Install-Recommends "0";
 APT::Install-Suggests "0";
 EOF
 
-cat >>/mnt/etc/apt/preferences.d/99custom <<"EOF"
+cat >/mnt/etc/apt/preferences.d/99custom <<"EOF"
 Package: *
 Pin: release c=non-free
 Pin-Priority: -10
@@ -101,7 +101,7 @@ Pin-Priority: 1005
 EOF
 
 mkdir /mnt/etc/systemd/resolved.conf.d
-cat >>/mnt/etc/systemd/resolved.conf.d/99custom.conf <<"EOF"
+cat >/mnt/etc/systemd/resolved.conf.d/99custom.conf <<"EOF"
 [Resolve]
 DNS=8.8.8.8#dns.google 8.8.4.4#dns.google 2001:4860:4860::8888#dns.google 2001:4860:4860::8844#dns.google
 FallbackDNS=1.1.1.1#cloudflare-dns.com 1.0.0.1#cloudflare-dns.com 2606:4700:4700::1111#cloudflare-dns.com 2606:4700:4700::1001#cloudflare-dns.com
@@ -117,7 +117,7 @@ ReadEtcHosts=yes
 EOF
 
 mkdir /mnt/etc/systemd/logind.conf.d
-cat >>/mnt/etc/systemd/logind.conf.d/99custom.conf <<"EOF"
+cat >/mnt/etc/systemd/logind.conf.d/99custom.conf <<"EOF"
 [Login]
 HandlePowerKey=poweroff
 HandleSuspendKey=ignore
@@ -130,7 +130,7 @@ HandleLidSwitchExternalPower=ignore
 EOF
 
 mkdir /mnt/etc/systemd/sleep.conf.d
-cat >>/mnt/etc/systemd/sleep.conf.d/99custom.conf <<"EOF"
+cat >/mnt/etc/systemd/sleep.conf.d/99custom.conf <<"EOF"
 [Sleep]
 AllowSuspend=no
 AllowHibernation=no
@@ -141,12 +141,12 @@ EOF
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt update
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y locales
 
-cat >>/mnt/etc/locale.gen <<"EOF"
+cat >/mnt/etc/locale.gen <<"EOF"
 en_US.UTF-8 UTF-8
 en_GB.UTF-8 UTF-8
 EOF
 
-cat >>/mnt/etc/default/locale <<"EOF"
+cat >/mnt/etc/default/locale <<"EOF"
 LANG=en_US.UTF-8
 LANGUAGE=
 LC_CTYPE=en_US.UTF-8
@@ -168,7 +168,7 @@ systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midga
 
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y keyboard-configuration
 
-cat >>/mnt/etc/default/keyboard <<"EOF"
+cat >/mnt/etc/default/keyboard <<"EOF"
 # KEYBOARD CONFIGURATION FILE
 
 # Consult the keyboard(5) manual page.
@@ -185,7 +185,7 @@ systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midga
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y systemd-timesyncd
 
 mkdir /mnt/etc/systemd/timesyncd.conf.d
-cat >>/mnt/etc/systemd/timesyncd.conf.d/99custom.conf <<"EOF"
+cat >/mnt/etc/systemd/timesyncd.conf.d/99custom.conf <<"EOF"
 [Time]
 NTP=0.europe.pool.ntp.org 1.europe.pool.ntp.org 2.europe.pool.ntp.org 3.europe.pool.ntp.org
 FallbackNTP=0.debian.pool.ntp.org 1.debian.pool.ntp.org 2.debian.pool.ntp.org 3.debian.pool.ntp.org
@@ -254,7 +254,7 @@ systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midga
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y grub-efi-amd64
 systemd-nspawn --directory /mnt --tmpfs /var/cache/apt/archives --hostname midgard --settings off --link-journal off --timezone off --resolv-conf off apt install -y desktop-base
 
-cat >>/mnt/etc/fstab <<EOF
+cat >/mnt/etc/fstab <<EOF
 PARTUUID=$(blkid -o value -s PARTUUID /dev/nvme0n1p2) / ext4 defaults,strictatime,lazytime 0 1
 PARTUUID=$(blkid -o value -s PARTUUID /dev/nvme0n1p1) /efi vfat defaults,noatime,ro 0 2
 EOF
